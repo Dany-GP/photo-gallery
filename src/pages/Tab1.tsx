@@ -2,9 +2,7 @@ import { IonButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from 
 import { IonList, IonItem, IonLabel, IonInput, IonToggle, IonRadio, IonCheckbox, IonItemSliding, IonItemOption, IonItemOptions } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './Tab1.css';
-import { LocalNotifications } from '@capacitor/local-notifications';
-
-
+import { LocalNotifications, LocalNotificationDescriptor } from '@capacitor/local-notifications';
 
 
 const Tab1: React.FC = () => {
@@ -21,8 +19,8 @@ const Tab1: React.FC = () => {
             <IonTitle size="large">Tab 1</IonTitle>
           </IonToolbar>
         </IonHeader>
-        
-        <IonButton expand="block" color='primary' shape='round'>Not</IonButton>
+
+        <IonButton onClick={() => lanzarNot()} expand="block" color='primary' shape='round'>Not</IonButton>
         <ExploreContainer name="Tab 1 page" />
 
       </IonContent>
@@ -31,3 +29,16 @@ const Tab1: React.FC = () => {
 };
 
 export default Tab1;
+async function lanzarNot() {
+
+  await LocalNotifications.schedule({
+    notifications: [{
+      title: 'Triumph30',
+      body:   "xd",
+      id: 1,
+      
+    }]
+  });
+  console.log("listo");
+}
+

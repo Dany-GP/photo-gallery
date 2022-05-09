@@ -8,6 +8,7 @@ import ExploreContainer from '../components/ExploreContainer';
 import './Tab2.css';
 import usePhotoGallery from '../hooks/usePhotoGallery';
 import { useState } from 'react';
+import { ActionSheet, ActionSheetButtonStyle } from '@capacitor/action-sheet';
 
 
 
@@ -28,7 +29,7 @@ const Tab2: React.FC = () => {
           <IonRow>
             {photos.map((photo, index) => (
               <IonCol size="6" key={index}>
-                <IonImg src={photo.webviewPath} />
+                <IonImg onClick={() => showActionMenu(index)} src={photo.webviewPath} />
               </IonCol>
             ))}
           </IonRow>
@@ -45,3 +46,24 @@ const Tab2: React.FC = () => {
 };
 
 export default Tab2;
+async function showActionMenu( index: number ){
+  const result = await ActionSheet.showActions({
+    title: 'Photo Options',
+    message: 'Select an option to perform',
+    options: [
+      {
+        title: 'Upload',
+      },
+      {
+        title: 'Share',
+      },
+      {
+        title: 'Remove',
+        style: ActionSheetButtonStyle.Destructive,
+      },
+    ],
+  });
+  console.log('Action Sheet result:', result);
+  console.log(index);
+}
+
