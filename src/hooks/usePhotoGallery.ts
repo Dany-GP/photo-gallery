@@ -4,33 +4,42 @@ import { isPlatform } from '@ionic/react';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Storage } from '@capacitor/storage';
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, Plugins } from '@capacitor/core';
+import { VideoRecorderCamera, VideoRecorderPreviewFrame } from '@teamhive/capacitor-video-recorder';
 
-
-
+const { VideoRecorder } = Plugins;
+const config: VideoRecorderPreviewFrame = {
+  id: 'video-record',
+  stackPosition: 'front', // 'front' overlays your app', 'back' places behind your app.
+  width: 'fill',
+  height: 'fill',
+  x: 0,
+  y: 0,
+  borderRadius: 0
+};
 const PHOTO_STORAGE = 'photos';
 export default function usePhotoGallery() {
   const [photos, setPhotos] = useState<UserPhoto[]>([]);
 
-  useEffect(() => {
-    const loadSaved = async () => {
-      const { value } = await Storage.get({ key: PHOTO_STORAGE });
-     
-      const photosInStorage = (value ? JSON.parse(value) : []) as UserPhoto[];
-      // If running on the web...
-      if (!isPlatform('hybrid')) {
-        for (let photo of photosInStorage) {
-          const file = await Filesystem.readFile({
-            path: photo.filepath,
-            directory: Directory.Data,
-          });
-          // Web platform only: Load the photo as base64 data
-          photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
-        }
+  const loadSaved = async () => {
+    const { value } = await Storage.get({ key: PHOTO_STORAGE });
+
+    const photosInStorage = (value ? JSON.parse(value) : []) as UserPhoto[];
+    // If running on the web...
+    if (!isPlatform('hybrid')) {
+      for (let photo of photosInStorage) {
+        const file = await Filesystem.readFile({
+          path: photo.filepath,
+          directory: Directory.Data,
+        });
+        // Web platform only: Load the photo as base64 data
+        photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
       }
-      setPhotos(photosInStorage);
-     };
-     
+    }
+    setPhotos(photosInStorage);
+  };
+
+  useEffect(() => {
     loadSaved();
   }, []);
 
@@ -41,6 +50,7 @@ export default function usePhotoGallery() {
       source: CameraSource.Camera,
       quality: 100,
     });
+
     const fileName = new Date().getTime() + '.jpeg';
     const savedFileImage = await savePicture(photo, fileName);
     const newPhotos = [
@@ -54,9 +64,20 @@ export default function usePhotoGallery() {
     Storage.set({ key: PHOTO_STORAGE, value: JSON.stringify(newPhotos) });
   };
 
+  
+
+  const deletePhoto = async (photo: string) => {
+    await deletePicture(photo);
+    Storage.remove({key: PHOTO_STORAGE});
+    console.log(photos);
+    
+
+  }
+
   return {
     photos,
-    takePhoto
+    takePhoto,
+    deletePhoto
   };
 }
 
@@ -81,7 +102,8 @@ const savePicture = async (photo: Photo, fileName: string): Promise<UserPhoto> =
     data: base64Data,
     directory: Directory.Data,
   });
- 
+
+
   if (isPlatform('hybrid')) {
     // Display the new image by rewriting the 'file://' path to HTTP
     // Details: https://ionicframework.com/docs/building/webview#file-protocol
@@ -97,8 +119,22 @@ const savePicture = async (photo: Photo, fileName: string): Promise<UserPhoto> =
       webviewPath: photo.webPath,
     };
   }
- };
- 
+
+};
+
+const deletePicture = async ( fileName: string) => {
+  
+  
+  const savedFile = await Filesystem.deleteFile({
+    path: fileName,
+    directory: Directory.Data,
+  });
+
+
+  
+
+};
+
 
 export async function base64FromPath(path: string): Promise<string> {
   const response = await fetch(path);

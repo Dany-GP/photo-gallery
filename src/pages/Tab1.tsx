@@ -2,7 +2,7 @@ import { IonButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from 
 import { IonList, IonItem, IonLabel, IonInput, IonToggle, IonRadio, IonCheckbox, IonItemSliding, IonItemOption, IonItemOptions } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './Tab1.css';
-import { LocalNotifications, LocalNotificationDescriptor } from '@capacitor/local-notifications';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 
 const Tab1: React.FC = () => {
@@ -33,8 +33,8 @@ async function lanzarNot() {
 
   await LocalNotifications.schedule({
     notifications: [{
-      title: 'Triumph30',
-      body:   "xd",
+      title: 'Titulo de la notificacion',
+      body:   "xd xd xd xd xd xd xd xd",
       id: 1,
       
     }]
