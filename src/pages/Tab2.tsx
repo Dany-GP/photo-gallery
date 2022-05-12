@@ -1,7 +1,7 @@
 import {
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
   IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol,
-  IonImg, useIonActionSheet, useIonToast
+  IonImg, useIonActionSheet 
 } from '@ionic/react';
 import { camera } from 'ionicons/icons';
 import ExploreContainer from '../components/ExploreContainer';
@@ -10,10 +10,11 @@ import usePhotoGallery from '../hooks/usePhotoGallery';
 import { useState } from 'react';
 import { ActionSheet, ActionSheetButtonStyle } from '@capacitor/action-sheet';
 
+import {useIonToast} from '@ionic/react';
 
-const [present, dismiss] = useIonToast();
+
 const Tab2: React.FC = () => {
-
+  const [present, dismiss] = useIonToast();
   async function showActionMenu(path: string) {
     const result = await ActionSheet.showActions({
       title: path,
@@ -36,9 +37,10 @@ const Tab2: React.FC = () => {
 
     if (result.index == 2) {
       deletePhoto(path);
-      present('hello from hook', 3000);
       console.log("deleted");
     }
+
+    present(result.index  + "", 3000);
 
   }
 
